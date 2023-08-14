@@ -29,7 +29,7 @@ async function createBooking(data) {
   }
   catch (error) {
     await t.rollback();
-    //  console.log(error);
+   // console.log(error);
     throw error;
   }
 }
@@ -98,7 +98,18 @@ async function cancelBokking(bookingId) {
   }
 }
 
+async function cancelOldbooking(){
+    const dateTime=new Date(Date.now()-5*60*1000);
+    try {
+      const response=await BookingRepository.cancelOldbooking(dateTime);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+}
+
 module.exports = {
   createBooking,
-  makePayment
+  makePayment,
+  cancelOldbooking
 }

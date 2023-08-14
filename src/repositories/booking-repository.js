@@ -1,5 +1,9 @@
 const { Booking } = require('../models');
 const crudRepository = require('./crud-repository');
+const { Op } = require("sequelize");
+const { Enums } = require('../utils/common');
+const { BOOKED, CANCELLED } = Enums.BOOKING_STATUS;
+
 class bookingRepository extends crudRepository {
     constructor() {
         super(Booking);
@@ -13,9 +17,9 @@ class bookingRepository extends crudRepository {
             throw error;
         }
     }
-    async getBooking(id,t) {
+    async getBooking(id, t) {
         try {
-           const response = await Booking.findByPk(id,{ transaction: t });
+            const response = await Booking.findByPk(id, { transaction: t });
             return response;
         }
         catch (error) {
@@ -23,7 +27,7 @@ class bookingRepository extends crudRepository {
         }
     }
 
-    async updateBooking(id,data,t) {
+    async updateBooking(id, data, t) {
         try {
             const response = await Booking.update(data, {
 
@@ -33,6 +37,36 @@ class bookingRepository extends crudRepository {
             }, { transaction: t });
         }
         catch (error) {
+            throw error;
+        }
+    }
+
+    async cancelOldbooking(dateTime) {
+        try {
+            const response = await Booking.update({ status: CANCELLED }, {
+                where: {
+                    [Op.and]: [
+                        {
+                            createdAt: {
+                                [Op.lt]: dateTime
+                            }
+                        },
+
+                        {
+                            status: {
+                                [Op.ne]: BOOKED
+                            }
+                        },
+                        {
+                            status: {
+                                [Op.ne]: CANCELLED
+                            }
+                        },
+                    ]
+                }
+            });
+            return response;
+        } catch (error) {
             throw error;
         }
     }
