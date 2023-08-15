@@ -29,7 +29,7 @@ async function createBooking(data) {
   }
   catch (error) {
     await t.rollback();
-   // console.log(error);
+    //console.log(error);
     throw error;
   }
 }

@@ -3,7 +3,7 @@ const {bookingService}=require('../../services');
 
 function sheduleCrons(){
     
-    cron.schedule('*/3 * * * * *', async() => {
+    cron.schedule('*/30 * * * * *', async() => {
         //console.log("inside cron");
      await bookingService.cancelOldbooking();
 });
