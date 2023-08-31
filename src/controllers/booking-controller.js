@@ -19,7 +19,7 @@ async function createBooking(req, res) {
                      .json(SuccessResponse);
        }
        catch (error) {
-
+              console.log(error);
               ErrorResponse.error = error;
               return res
                      .status(error.statusCode)
@@ -50,6 +50,7 @@ async function makePayment(req, res) {
               const paymentInfo = await bookingService.makePayment({
                      bookingId: req.body.bookingId,
                      userId: req.body.userId,
+                     userEmail:req.body.userEmail,
                      totalCost: req.body.totalCost
               });
               inmDbmap[idemppotentKey] = idemppotentKey;

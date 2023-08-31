@@ -3,7 +3,7 @@ const { bookingRepository } = require('../repositories');
 const db = require('../models');
 const axios = require('axios');
 const Apperror = require('../utils/error/App-error');
-const { ServerConfig } = require('../config');
+const { ServerConfig,queueConfig } = require('../config');
 const { Enums } = require('../utils/common');
 const { BOOKED, CANCELLED } = Enums.BOOKING_STATUS;
 
@@ -29,7 +29,7 @@ async function createBooking(data) {
   }
   catch (error) {
     await t.rollback();
-    //console.log(error);
+    console.log(error);
     throw error;
   }
 }
@@ -64,6 +64,12 @@ async function makePayment(data) {
     }
     await BookingRepository.updateBooking(data.bookingId, { status: BOOKED }, { transaction: t });
     const bookingDetails1 = await BookingRepository.getBooking(data.bookingId);
+
+    //publish message to queue
+    await queueConfig.sendData({
+      recipientEmail:data.userEmail,
+      subject:'BOOKING SUCCESSFULL',
+      message:`booking Successfull for booking id ${bookingDetails1.id}`});
     await t.commit();
     return bookingDetails1;
 
